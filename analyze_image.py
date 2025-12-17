@@ -14,8 +14,6 @@ def upload_to_s3(image_path, bucket_name):
     return s3_key
 
 def detect_labels(photo, bucket):
-
-def detect_labels(photo, bucket):
      client = boto3.client('rekognition')
 
      response = client.detect_labels(Image={'S3Object':{'Bucket':bucket, 'Name':photo}}, MaxLabels=10)
@@ -24,7 +22,7 @@ def detect_labels(photo, bucket):
      #Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
      #Settings={"GeneralLabels": {"LabelInclusionFilters":["Cat"]},
      # "ImageProperties": {"MaxDominantColors":10}}
-     
+
 
      return response
 
