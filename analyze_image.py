@@ -24,7 +24,7 @@ def detect_labels(photo, bucket):
      #Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
      #Settings={"GeneralLabels": {"LabelInclusionFilters":["Cat"]},
      # "ImageProperties": {"MaxDominantColors":10}}
-     )
+     
 
      return response
 
