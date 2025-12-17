@@ -1,6 +1,7 @@
 import argparse
 import os
 from datetime import datetime
+from decimal import Decimal
 
 import boto3
 
@@ -36,7 +37,13 @@ def format_labels(rekognition_response: dict) -> list[dict]:
     Reduce Rekognition response to only Name + Confidence for each label.
     """
     labels = rekognition_response.get("Labels", [])
-    return [{"Name": l.get("Name"), "Confidence": float(l.get("Confidence", 0.0))} for l in labels]
+    return [
+    {
+        "Name": l.get("Name"),
+        "Confidence": Decimal(str(l.get("Confidence", 0.0)))
+    }
+    for l in labels
+]
 
 
 def write_to_dynamodb(filename: str, labels: list[dict], table_name: str, branch: str) -> None:
