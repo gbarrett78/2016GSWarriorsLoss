@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened] # Triggers on PR creation, updates, and reopening
+    types: [opened, synchronize, reopened]
 
 jobs:
   label_images_beta:
@@ -17,7 +17,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirement.txt || pip install boto3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -27,6 +32,8 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Execute image labeling script and write to Beta DB
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          BRANCH_NAME: ${{ github.head_ref }}
         run: |
-          # Install necessary dependencies if needed, e.g., pip install boto3
-          python analyze_image.py --output-table beta_results
+          python analyze_image.py --output-table ${{ secrets.DYNAMODB_TABLE_BETA }}
