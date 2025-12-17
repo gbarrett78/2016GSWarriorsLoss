@@ -1,6 +1,7 @@
 import argparse
 import os
-from datetime import datetime
+import json
+from datetime import datetime, timezone
 from decimal import Decimal
 
 import boto3
@@ -56,13 +57,14 @@ def write_to_dynamodb(filename: str, labels: list[dict], table_name: str, branch
     timestamp = datetime.utcnow().isoformat() + "Z"
 
     table.put_item(
-        Item={
-            "filename": filename,
-            "labels": labels,
-            "timestamp": timestamp,
-            "branch": branch,
-        }
-    )
+    Item={
+        "filename": filename,
+        "labels": json.loads(json.dumps(labels), parse_float=Decimal),
+        "timestamp": timestamp,
+        "branch": branch,
+    }
+)
+
 
 
 def find_first_image(images_dir: str = "images") -> str:
