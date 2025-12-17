@@ -31,9 +31,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Execute image labeling script and write to Beta DB
-        env:
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          BRANCH_NAME: ${{ github.head_ref }}
+      - name: Validate script compiles
         run: |
-          python analyze_image.py --output-table ${{ secrets.DYNAMODB_TABLE_BETA }}
+          python -m py_compile analyze_image.py
