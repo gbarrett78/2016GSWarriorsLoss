@@ -1,5 +1,6 @@
 import boto3
 import os
+from decimal import Decimal
 from datetime import datetime
 
 def upload_to_s3(image_path, bucket_name):
@@ -14,8 +15,6 @@ def upload_to_s3(image_path, bucket_name):
     return s3_key
 
 def detect_labels(photo, bucket):
-
-def detect_labels(photo, bucket):
      client = boto3.client('rekognition')
 
      response = client.detect_labels(Image={'S3Object':{'Bucket':bucket, 'Name':photo}}, MaxLabels=10)
@@ -24,13 +23,12 @@ def detect_labels(photo, bucket):
      #Features=["GENERAL_LABELS", "IMAGE_PROPERTIES"],
      #Settings={"GeneralLabels": {"LabelInclusionFilters":["Cat"]},
      # "ImageProperties": {"MaxDominantColors":10}}
-     )
 
      return response
 
 def write_to_dynamodb(filename, labels, table_name, branch):
      dynamodb = boto3.resource('dynamodb')
-     table = dyanmodb.Table(table_name)
+     table = dynamodb.Table(table_name)
 
      timestamp = datetime.utcnow().isoformat() + 'Z'
 
@@ -118,12 +116,14 @@ if __name__ == "__main__":
     
     # Detect labels
     response = detect_labels(s3_key, bucket_name)
-    
-    # Format labels (Name and Confidence only)
+
     formatted_labels = [
-        {'Name': label['Name'], 'Confidence': label['Confidence']}
-        for label in response['Labels']
-    ]
+    {
+        "Name": label.get("Name"),
+        "Confidence": Decimal(str(label.get("Confidence", 0.0)))
+    }
+    for label in response.get("Labels", [])
+]
     
     # Write to DynamoDB
     write_to_dynamodb(s3_key, formatted_labels, table_name, branch_name)
