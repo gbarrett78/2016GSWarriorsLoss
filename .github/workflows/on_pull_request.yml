@@ -29,4 +29,4 @@ jobs:
       - name: Execute image labeling script and write to Beta DB
         run: |
           # Install necessary dependencies if needed, e.g., pip install boto3
-          python image_labeling_script.py --output-table beta_results
+          python analyze_image.py --output-table beta_results
