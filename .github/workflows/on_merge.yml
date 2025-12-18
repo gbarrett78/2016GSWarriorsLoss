@@ -7,9 +7,6 @@ on:
 
 jobs:
   label_images_prod:
-    # Use an if condition to ensure this only runs if it was a PR merge and not a direct commit to main
-    # Note: A direct commit will still trigger this. To ensure it only runs on PR merges, a more complex API call check is needed, 
-    # but for most CI/CD, running on all pushes to main is the standard approach.
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +25,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Execute image labeling script and write to Prod DB
+      - name: Debug - List files
         run: |
-          # Install necessary dependencies if needed, e.g., pip install boto3
-          python image_labeling_script.py --output-table prod_results
+          pwd
+          ls -la
+          ls -la .github/workflows
+
+      - name: Install dependencies
+        run: pip install boto3
+
+      - name: Execute image labeling script and write to Prod DB
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          DYNAMODB_TABLE: prod_results
+          BRANCH_NAME: main
+        run: python analyze_image.py
