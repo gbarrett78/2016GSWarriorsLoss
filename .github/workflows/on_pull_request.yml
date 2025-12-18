@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened] # Triggers on PR creation, updates, and reopening
+    types: [opened, synchronize, reopened]
 
 jobs:
   label_images_beta:
@@ -26,7 +26,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Install dependencies
+        run: pip install boto3
+
       - name: Execute image labeling script and write to Beta DB
-        run: |
-          # Install necessary dependencies if needed, e.g., pip install boto3
-          python analyze_image.py --output-table beta_results
+        run: python analyze_image.py --output-table beta_results
