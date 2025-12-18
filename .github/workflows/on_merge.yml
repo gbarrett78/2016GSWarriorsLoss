@@ -35,4 +35,8 @@ jobs:
         run: pip install boto3
 
       - name: Execute image labeling script and write to Prod DB
-        run: python analyze_image.py --output-table prod_results
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          DYNAMODB_TABLE: prod_results
+          BRANCH_NAME: main
+        run: python analyze_image.py

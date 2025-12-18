@@ -30,4 +30,8 @@ jobs:
         run: pip install boto3
 
       - name: Execute image labeling script and write to Beta DB
-        run: python analyze_image.py --output-table beta_results
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          DYNAMODB_TABLE: beta_results
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: python analyze_image.py
