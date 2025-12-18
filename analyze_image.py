@@ -1,6 +1,7 @@
 import boto3
 import os
 from datetime import datetime
+from decimal import Decimal
 
 def upload_to_s3(image_path, bucket_name):
     s3 = boto3.client('s3')
@@ -19,10 +20,16 @@ def write_to_dynamodb(filename, labels, table_name, branch):
     table = dynamodb.Table(table_name)
     timestamp = datetime.utcnow().isoformat() + 'Z'
     
+    # Convert float Confidence values to Decimal
+    labels_decimal = [
+        {'Name': label['Name'], 'Confidence': Decimal(str(label['Confidence']))}
+        for label in labels
+    ]
+    
     table.put_item(
         Item={
             'filename': filename,
-            'labels': labels,
+            'labels': labels_decimal,
             'timestamp': timestamp,
             'branch': branch,
         }
